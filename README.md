@@ -1,165 +1,82 @@
-# Bolt Hole Identifier Model
+# Digit Recognizer
 
-A deep learning model for recognizing numbers in a bolt hole images, with special handling for cases where no number is present.
+Digit Recognizer is a deep learning project for recognizing two-digit numbers (00-99) and detecting the absence of a number (no-number) from images. The project is implemented in Python using PyTorch and includes a Flutter app for desktop integration.
 
-## API Endpoints
+## Features
+- Deep learning model for two-digit number recognition (00-99)
+- Special handling for 'no-number' class
+- Class balancing using computed class weights
+- Cosine annealing learning rate scheduler with warmup
+- Training and validation history logging
+- Model checkpointing for best validation accuracy
+- Flutter desktop app integration (Windows)
 
-- `GET /`: Root endpoint with API information
-- `POST /predict`: Endpoint for predicting numbers in license plate images
-- `GET /health`: Health check endpoint
-
-## Local Development
-
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
+## Project Structure
+```
+best_model3.pth                # Best model weights
+explanation_book.md            # Project explanations
+LICENSE                        # License file
+project_report.md              # Project report
+README.md                      # This file
+requirements.txt               # Python dependencies
+training_history3.csv          # Training/validation history
+flutter_app/                   # Flutter desktop app
+ocr/                           # OCR-related code/data
+src/                           # Main Python source code
+    data/                      # Data loading utilities
+    models/                    # Model definition
+    ...                        # Training, evaluation, API, etc.
+tirextract/                    # Additional code/widgets
 ```
 
-2. Run the API:
-```bash
-python src/api.py
+## Getting Started
+
+### Prerequisites
+- Python 3.8+
+- PyTorch
+- (Optional) CUDA-enabled GPU for faster training
+- Flutter (for desktop app)
+
+### Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Him-09/digit_recognizer.git
+   cd digit_recognizer
+   ```
+2. Install Python dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+3. (Optional) Set up the Flutter app:
+   - Follow instructions in `flutter_app/README.md` (if available)
+
+### Training the Model
+Run the following command to start training:
+```sh
+python src/train.py
 ```
+- Training and validation metrics will be saved to `training_history3.csv`.
+- The best model weights will be saved to `best_model3.pth`.
 
-The API will be available at `http://localhost:8000`
+### Evaluating the Model
+Use `src/evaluate.py` to evaluate the trained model on test data.
 
-## Docker Deployment
+### API Usage
+- The `src/api.py` file provides an API for model inference.
 
-1. Build the Docker image:
-```bash
-docker build -t license-plate-api .
-```
+## Data
+- Training/validation images: `src/train&valdata/`
+- Labels: `src/data_label.csv`
+- Test images: `src/testdata/`
 
-2. Run the container:
-```bash
-docker run -p 8000:8000 license-plate-api
-```
+## Model
+- Model architecture is defined in `src/models/model.py` as `MyModel`.
+- Handles 100 classes (00-99) plus a special 'no-number' class (index 100).
 
-## DigitalOcean Deployment
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-1. Create a new Droplet on DigitalOcean:
-   - Choose Ubuntu 20.04 LTS
-   - Select a plan with at least 2GB RAM
-   - Choose a datacenter region
-   - Add your SSH key
-
-2. SSH into your Droplet:
-```bash
-ssh root@your_droplet_ip
-```
-
-3. Install Docker:
-```bash
-# Update system
-apt-get update
-
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-
-# Add your user to docker group
-usermod -aG docker $USER
-```
-
-4. Clone the repository:
-```bash
-git clone your_repository_url
-cd your_repository
-```
-
-5. Build and run the Docker container:
-```bash
-docker build -t license-plate-api .
-docker run -d -p 8000:8000 license-plate-api
-```
-
-6. Set up Nginx as reverse proxy (optional but recommended):
-```bash
-# Install Nginx
-apt-get install nginx
-
-# Create Nginx configuration
-cat > /etc/nginx/sites-available/license-plate-api << 'EOL'
-server {
-    listen 80;
-    server_name your_domain.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-EOL
-
-# Enable the site
-ln -s /etc/nginx/sites-available/license-plate-api /etc/nginx/sites-enabled/
-rm /etc/nginx/sites-enabled/default
-
-# Test and restart Nginx
-nginx -t
-systemctl restart nginx
-```
-
-7. Set up SSL with Certbot (optional but recommended):
-```bash
-# Install Certbot
-apt-get install certbot python3-certbot-nginx
-
-# Get SSL certificate
-certbot --nginx -d your_domain.com
-```
-
-## Monitoring and Maintenance
-
-1. View container logs:
-```bash
-docker logs <container_id>
-```
-
-2. Restart container:
-```bash
-docker restart <container_id>
-```
-
-3. Update application:
-```bash
-git pull
-docker build -t license-plate-api .
-docker stop <container_id>
-docker rm <container_id>
-docker run -d -p 8000:8000 license-plate-api
-```
-
-## Security Considerations
-
-1. Keep system and dependencies updated
-2. Use HTTPS for all API calls
-3. Implement rate limiting
-4. Regular security audits
-5. Monitor logs for suspicious activity
-
-## Troubleshooting
-
-1. Check container status:
-```bash
-docker ps
-```
-
-2. View container logs:
-```bash
-docker logs <container_id>
-```
-
-3. Check Nginx logs:
-```bash
-tail -f /var/log/nginx/error.log
-tail -f /var/log/nginx/access.log
-```
-
-4. Verify SSL certificate:
-```bash
-certbot certificates
-```
+## Acknowledgements
+- PyTorch
+- Flutter
+- Contributors and open-source community
